@@ -25,6 +25,7 @@ require 'xlsx_writer/xml/workbook'
 require 'xlsx_writer/xml/workbook_rels'
 require 'xlsx_writer/xml/vml_drawing'
 require 'xlsx_writer/xml/vml_drawing_rels'
+require 'xlsx_writer/zip'
 
 class XlsxWriter
   attr_reader :staging_dir
@@ -79,7 +80,10 @@ class XlsxWriter
         images.each { |image| image.generate }
         shared_strings.generate
         Xml.auto.each { |part| part.new(self).generate }
-        with_zip_extname = UnixUtils.zip staging_dir
+
+        with_zip_extname = "/tmp/xlsx.#{Process.pid}.zip"
+        ZipFileGenerator.new(staging_dir, with_zip_extname).write
+
         with_xlsx_extname = with_zip_extname.sub(/.zip$/, '.xlsx')
         FileUtils.mv with_zip_extname, with_xlsx_extname
         @generated = true
