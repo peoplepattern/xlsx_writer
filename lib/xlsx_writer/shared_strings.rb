@@ -1,4 +1,5 @@
 require 'murmurhash3'
+require 'daybreak'
 
 class XlsxWriter
   class SharedStrings
@@ -11,7 +12,7 @@ class XlsxWriter
     def initialize(document)
       @mutex = Mutex.new
       @document = document
-      @indexes = {}
+      @indexes =  Daybreak::DB.new(Tempfile.new('xlsx-strings'))
       @path = File.join document.staging_dir, relative_path
       FileUtils.mkdir_p File.dirname(path)
       @strings_tmp_file_writer = File.open(strings_tmp_file_path, 'wb')
@@ -60,6 +61,15 @@ EOS
       end
     end
 
+    def flush
+      @indexes.flush
+    end
+    
+    def cleanup
+      @indexes.close
+      @indexes.file.unlink
+    end
+    
     private
 
     def strings_tmp_file_path

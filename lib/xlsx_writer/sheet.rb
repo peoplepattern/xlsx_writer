@@ -125,6 +125,9 @@ EOS
           max_cell_pixel_width[x] = w
         end
       end
+
+      row.sheet.document.shared_strings.flush
+      
       nil
     end
 

@@ -98,6 +98,7 @@ class XlsxWriter
       FileUtils.rm_f @path
       @path = nil
       @generated = false
+      @shared_strings.cleanup
     end
   end
   
